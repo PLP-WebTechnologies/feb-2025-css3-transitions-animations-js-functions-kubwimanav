@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Elements with User Preferences</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --background-color: #f5f5f5;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            transition: background-color 0.5s ease;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-container {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .preferences {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preference-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.2);
+        }
+
+        .selected {
+            border: 3px solid var(--text-color);
+        }
+
+        /* Animation classes */
+        .bounce {
+            animation: bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pulse {
+            animation: pulse 1s ease infinite;
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+
+        .rotate {
+            animation: rotate 1s ease;
+        }
+
+        .fade {
+            animation: fade 0.5s ease;
+        }
+
+        /* Dark mode */
+        .dark-mode {
+            --background-color: #222222;
+            --text-color: #f5f5f5;
+        }
+
+        .dark-mode .card {
+            background-color: #333333;
+            color: #f5f5f5;
+        }
+
+        /* Animation keyframes */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-10px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(10px);
+            }
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .animation-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Animated Elements</h1>
+            <p>Personalize your experience with animations and color themes</p>
+        </div>
+
+        <div class="card">
+            <h2>Animation Playground</h2>
+            <div class="image-container">
+                <img src="/api/placeholder/200/200" alt="placeholder" class="placeholder-image" id="animated-image">
+            </div>
+            
+            <div class="animation-controls">
+                <button class="button" data-animation="bounce">Bounce</button>
+                <button class="button" data-animation="pulse">Pulse</button>
+                <button class="button" data-animation="shake">Shake</button>
+                <button class="button" data-animation="rotate">Rotate</button>
+                <button class="button" data-animation="fade">Fade</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>User Preferences</h2>
+            <div class="preferences">
+                <div class="preference-item">
+                    <label>Theme Color:</label>
+                    <div class="color-option" style="background-color: #4285f4;" data-color="#4285f4" title="Blue"></div>
+                    <div class="color-option" style="background-color: #ea4335;" data-color="#ea4335" title="Red"></div>
+                    <div class="color-option" style="background-color: #34a853;" data-color="#34a853" title="Green"></div>
+                    <div class="color-option" style="background-color: #fbbc05;" data-color="#fbbc05" title="Yellow"></div>
+                    <div class="color-option" style="background-color: #9c27b0;" data-color="#9c27b0" title="Purple"></div>
+                </div>
+
+                <div class="preference-item">
+                    <label>Dark Mode:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="preference-item">
+                    <label>Default Animation:</label>
+                    <select id="default-animation">
+                        <option value="none">None</option>
+                        <option value="bounce">Bounce</option>
+                        <option value="pulse">Pulse</option>
+                        <option value="shake">Shake</option>
+                        <option value="rotate">Rotate</option>
+                        <option value="fade">Fade</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="button" id="reset-preferences">Reset Preferences</button>
+        </div>
+    </div>
+
+    <script>
+        // User preferences object
+        const userPreferences = {
+            themeColor: '#4285f4',
+            darkMode: false,
+            defaultAnimation: 'none'
+        };
+
+        // DOM Elements
+        const colorOptions = document.querySelectorAll('.color-option');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const defaultAnimationSelect = document.getElementById('default-animation');
+        const resetButton = document.getElementById('reset-preferences');
+        const animatedImage = document.getElementById('animated-image');
+        const animationButtons = document.querySelectorAll('[data-animation]');
+
+        // Load preferences from localStorage
+        function loadPreferences() {
+            const savedPreferences = localStorage.getItem('animationPreferences');
+            
+            if (savedPreferences) {
+                const parsedPreferences = JSON.parse(savedPreferences);
+                Object.assign(userPreferences, parsedPreferences);
+                
+                // Apply loaded preferences to UI
+                applyPreferences();
+            }
+        }
+
+        // Save preferences to localStorage
+        function savePreferences() {
+            localStorage.setItem('animationPreferences', JSON.stringify(userPreferences));
+        }
+
+        // Apply preferences to the UI
+        function applyPreferences() {
+            // Apply theme color
+            document.documentElement.style.setProperty('--primary-color', userPreferences.themeColor);
+            
+            // Update color option selection
+            colorOptions.forEach(option => {
+                const color = option.getAttribute('data-color');
+                if (color === userPreferences.themeColor) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // Apply dark mode
+            darkModeToggle.checked = userPreferences.darkMode;
+            if (userPreferences.darkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            
+            // Set default animation
+            defaultAnimationSelect.value = userPreferences.defaultAnimation;
+        }
+
+        // Add animation to element
+        function animateElement(element, animationName) {
+            // Remove any existing animations
+            element.classList.remove('bounce', 'pulse', 'shake', 'rotate', 'fade');
+            
+            // Force reflow to restart animation
+            void element.offsetWidth;
+            
+            // Add the new animation class
+            if (animationName !== 'none') {
+                element.classList.add(animationName);
+            }
+        }
+
+        // Event Listeners
+        colorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const color = this.getAttribute('data-color');
+                userPreferences.themeColor = color;
+                
+                // Apply and save changes
+                applyPreferences();
+                savePreferences();
+                
+                // Add bounce animation to the clicked color option
+                animateElement(this, 'bounce');
+            });
+        });
+
+        darkModeToggle.addEventListener('change', function() {
+            userPreferences.darkMode = this.checked;
+            
+            // Apply and save changes
+            applyPreferences();
+            savePreferences();
+        });
+
+        defaultAnimationSelect.addEventListener('change', function() {
+            userPreferences.defaultAnimation = this.value;
+            
+            // Apply and save changes
+            savePreferences();
+            
+            // Show the selected animation
+            if (this.value !== 'none') {
+                animateElement(animatedImage, this.value);
+            }
+        });
+
+        resetButton.addEventListener('click', function() {
+            // Reset to defaults
+            userPreferences.themeColor = '#4285f4';
+            userPreferences.darkMode = false;
+            userPreferences.defaultAnimation = 'none';
+            
+            // Apply and save changes
+            applyPreferences();
+            savePreferences();
+            
+            // Animate the button
+            animateElement(this, 'shake');
+        });
+
+        animationButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const animation = this.getAttribute('data-animation');
+                animateElement(animatedImage, animation);
+                
+                // Animate the button too
+                animateElement(this, 'bounce');
+            });
+        });
+
+        // Apply default animation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPreferences();
+            
+            // Apply default animation if set
+            if (userPreferences.defaultAnimation !== 'none') {
+                animateElement(animatedImage, userPreferences.defaultAnimation);
+            }
+        });
+
+        // Initialize
+        loadPreferences();
+    </script>
+</body>
+</html>
